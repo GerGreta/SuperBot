@@ -2,8 +2,8 @@
 import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
-from logic_summa import word_to_sum, reduce_to_single_digit
-from logic_number import parse_date, calculate_consciousness, calculate_action
+from logic_number import word_to_sum, reduce_to_single_digit
+from logic_summa import parse_date, calculate_consciousness, calculate_action
 
 TOKEN = os.getenv("BOT_TOKEN")
 
