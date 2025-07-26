@@ -1,25 +1,39 @@
 import asyncio
 import os
+from aiohttp import web
 from handlers import dp, bot
-from ping_server import app
+from ping_server import app as ping_app
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
-async def start_bot():
-    print("Бот запускается...")
-    await dp.start_polling(bot)
+WEBHOOK_PATH = "/webhook"
+WEBHOOK_HOST = os.getenv("RENDER_EXTERNAL_URL", "https://your-bot.onrender.com")
+WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
-async def main():
-    port = int(os.getenv("PORT", 8000))
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", port)
-    await site.start()
-    print(f"HTTP сервер запущен на порту {port}")
 
-    await start_bot()
+async def on_startup(app):
+    await bot.set_webhook(WEBHOOK_URL)
+    print(f"✅ Webhook установлен: {WEBHOOK_URL}")
+
+
+async def on_shutdown(app):
+    await bot.delete_webhook()
+    print("❌ Webhook удалён")
+
+
+def create_app():
+    app = web.Application()
+    app["bot"] = bot
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
+
+    app.add_subapp("/", ping_app)  # если ты используешь ping для Render
+
+    app.on_startup.append(on_startup)
+    app.on_shutdown.append(on_shutdown)
+    return app
+
 
 if __name__ == "__main__":
-    from aiohttp import web
     try:
-        asyncio.run(main())
+        web.run_app(create_app(), host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
     except KeyboardInterrupt:
         print("Бот остановлен")
