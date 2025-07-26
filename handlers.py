@@ -5,8 +5,7 @@ from aiogram.filters import CommandStart
 from logic_summa import word_to_sum, reduce_to_single_digit
 from logic_number import parse_date, calculate_consciousness, calculate_action
 
-TOKEN_SUMMA = os.getenv("BOT_TOKEN_SUMMA")
-TOKEN_NUMBER = os.getenv("BOT_TOKEN_NUMBER")
+TOKEN = os.getenv("BOT_TOKEN")
 
 # Для простоты будем использовать один Dispatcher и бота — токен можно менять при запуске.
 # Но если хочешь запускать 2 бота одновременно — лучше разделять их на разные процессы.
