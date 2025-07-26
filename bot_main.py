@@ -23,13 +23,16 @@ async def on_shutdown(app):
 def create_app():
     app = web.Application()
     app["bot"] = bot
+
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
 
-    app.add_subapp("/", ping_app)  # если ты используешь ping для Render
+    # Исправлено: Пинг-сервер на /ping
+    app.add_subapp("/ping", ping_app)
 
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
     return app
+
 
 
 if __name__ == "__main__":
