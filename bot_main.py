@@ -1,3 +1,10 @@
+import threading
+from ping_server import run_ping_server
+
+# Запускаем ping-сервер в отдельном потоке
+threading.Thread(target=run_ping_server, daemon=True).start()
+
+
 import asyncio
 from handlers import dp, bot  # остаётся как есть
 
