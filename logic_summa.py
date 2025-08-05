@@ -42,3 +42,28 @@ def calculate_action(day: int, month: int, year: int) -> int:
     all_digits = f"{day}{month}{year}"
     total = sum(int(d) for d in all_digits)
     return reduce_to_single_digit(total)
+
+from collections import Counter
+
+def analyze_digits(number: str) -> tuple[str, str]:
+    """
+    Возвращает две строки:
+    - Цифры, которые есть: в формате '1 (2), 3 (1), ...'
+    - Цифры, которых нет: в формате '2, 5, 9'
+    0 не учитывается вообще.
+    """
+    counts = Counter(number)
+
+    present = []
+    absent = []
+
+    for digit in map(str, range(1, 10)):  # исключаем 0
+        if digit in counts:
+            present.append(f"{digit} ({counts[digit]})")
+        else:
+            absent.append(digit)
+
+    present_str = ", ".join(present)
+    absent_str = ", ".join(absent)
+
+    return present_str, absent_str

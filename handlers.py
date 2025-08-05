@@ -3,7 +3,8 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from logic_number import word_to_sum, reduce_to_single_digit
-from logic_summa import parse_date, calculate_consciousness, calculate_action
+from logic_summa import parse_date, calculate_consciousness, calculate_action, analyze_digits
+
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -31,10 +32,15 @@ async def message_handler(message: types.Message):
         day, month, year = date
         consciousness = calculate_consciousness(day)
         action = calculate_action(day, month, year)
+
+        present_str, absent_str = analyze_digits(text)
+
         await message.answer(
             f"Дата рождения: {day:02}.{month:02}.{year}\n"
             f"Число Сознания: {consciousness}\n"
-            f"Число Действия: {action}"
+            f"Число Действия: {action}\n\n"
+            f"Цифры, которые есть: {present_str}\n"
+            f"Цифры, которых нет: {absent_str}"
         )
         return
 
