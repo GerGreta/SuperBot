@@ -2,57 +2,79 @@
 import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
-from logic_number import word_to_sum, reduce_to_single_digit
-from logic_summa import parse_date, calculate_consciousness, calculate_action, analyze_digits
 
+from logic_number import word_to_sum, reduce_to_single_digit
+from logic_summa import (
+    parse_date,
+    calculate_consciousness,
+    calculate_action,
+    analyze_digits,
+    calculate_personal_year,
+    calculate_personal_months,
+)
 
 TOKEN = os.getenv("BOT_TOKEN")
 
-# Для простоты будем использовать один Dispatcher и бота — токен можно менять при запуске.
-# Но если хочешь запускать 2 бота одновременно — лучше разделять их на разные процессы.
-
-# Для демонстрации — создадим два бота (при запуске берём один токен)
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
+
 
 @dp.message(CommandStart())
 async def start_handler(message: types.Message):
     await message.answer(
-        "Привет! Напиши слово (русское или английское) для подсчёта суммы букв, "
-        "или дату рождения (формат: 24041991) для расчёта чисел Сознания и Действия."
+        "Привет!\n\n"
+        "🔹 Напиши слово (русское или английское) — я посчитаю сумму букв\n"
+        "🔹 Или дату рождения (например: 24.04.1991 или 24041991)\n\n"
+        "Я рассчитаю:\n"
+        "• Число Сознания\n"
+        "• Число Действия\n"
+        "• Личный год\n"
+        "• Личные месяцы (январь–декабрь)"
     )
+
 
 @dp.message()
 async def message_handler(message: types.Message):
     text = message.text.strip()
 
-    # Попробуем распознать дату
+    # 1️⃣ Пробуем распознать дату
     date = parse_date(text)
     if date:
         day, month, year = date
+
         consciousness = calculate_consciousness(day)
         action = calculate_action(day, month, year)
 
+        personal_year = calculate_personal_year(day, month, year)
+        personal_months = calculate_personal_months(personal_year)
+
+        # анализ цифр берём из исходного текста (как пользователь ввёл)
         present_str, absent_str = analyze_digits(text)
 
         await message.answer(
-            f"Дата рождения: {day:02}.{month:02}.{year}\n"
-            f"Число Сознания: {consciousness}\n"
-            f"Число Действия: {action}\n\n"
-            f"Цифры, которые есть: {present_str}\n"
-            f"Цифры, которых нет: {absent_str}"
+            f"📅 Дата рождения: {day:02}.{month:02}.{year}\n\n"
+            f"🧠 Число Сознания: {consciousness}\n"
+            f"🔥 Число Действия: {action}\n"
+            f"🌱 Личный год: {personal_year}\n\n"
+            f"📆 Личные месяцы:\n{personal_months}\n\n"
+            f"🔢 Цифры, которые есть: {present_str}\n"
+            f"⭕ Цифры, которых нет: {absent_str}"
         )
         return
 
-    # Иначе — считаем слово
+    # 2️⃣ Иначе — считаем слово
     result = word_to_sum(text)
     if result is not None:
         reduced = reduce_to_single_digit(result)
         await message.answer(
-            f"Слово: {text}\n"
-            f"Сумма по буквам: {result}\n"
-            f"Однозначная сумма: {reduced}"
+            f"🔤 Слово: {text}\n"
+            f"➕ Сумма по буквам: {result}\n"
+            f"🔹 Однозначная сумма: {reduced}"
         )
         return
 
-    await message.answer("Не могу распознать дату или слово. Попробуй ещё раз.")
+    # 3️⃣ Если вообще не распознали
+    await message.answer(
+        "🤔 Не могу распознать сообщение.\n"
+        "Попробуй написать слово или дату рождения."
+    )
