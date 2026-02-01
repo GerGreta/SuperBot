@@ -1,5 +1,6 @@
 # logic_summa.py
 import re
+from datetime import datetime
 
 def reduce_to_single_digit(n: int) -> int:
     while n >= 10:
@@ -67,3 +68,39 @@ def analyze_digits(number: str) -> tuple[str, str]:
     absent_str = ", ".join(absent)
 
     return present_str, absent_str
+
+
+
+def calculate_personal_year(day: int, month: int, year: int) -> int:
+    """
+    Личный год:
+    (текущий год → сумма цифр → однозначное)
+    + день + месяц рождения
+    → однозначное
+    """
+    current_year = datetime.now().year
+    year_sum = reduce_to_single_digit(sum(int(d) for d in str(current_year)))
+
+    total = year_sum + day + month
+    return reduce_to_single_digit(total)
+
+
+def calculate_personal_months(personal_year: int) -> str:
+    """
+    Расписывает месяцы с января по декабрь:
+    личный год + номер месяца → однозначное
+    Возвращает строку в столбик
+    """
+    months = [
+        "Январь", "Февраль", "Март", "Апрель",
+        "Май", "Июнь", "Июль", "Август",
+        "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+    ]
+
+    lines = []
+    for i, month_name in enumerate(months, start=1):
+        value = reduce_to_single_digit(personal_year + i)
+        lines.append(f"{month_name}: {value}")
+
+    return "\n".join(lines)
+
