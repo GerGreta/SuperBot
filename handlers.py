@@ -85,3 +85,26 @@ async def message_handler(message: types.Message):
         "🤔 Не могу распознать сообщение.\n"
         "Попробуй написать слово или дату рождения."
     )
+
+# --------------------- Новая команда: картинка психоматрицы ---------------------
+@dp.message(commands=["matrix_img"])
+async def matrix_image_handler(message: types.Message):
+    date = parse_date(message.text)
+    if not date:
+        await message.answer(
+            "Введите корректную дату в формате 24.04.1991 или 24041991"
+        )
+        return
+
+    day, month, year = date
+    matrix = build_psychomatrix(day, month, year)
+
+    # генерируем картинку
+    img = draw_psychomatrix_image(matrix)
+
+    bio = BytesIO()
+    bio.name = "psychomatrix.png"
+    img.save(bio, "PNG")
+    bio.seek(0)
+
+    await message.answer_photo(photo=bio)
