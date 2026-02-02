@@ -133,17 +133,15 @@ def build_psychomatrix(day: int, month: int, year: int) -> list[list[str]]:
 
 
 def psychomatrix_to_ascii(matrix: list[list[str]], cell_width: int = 9) -> str:
-    """
-    Преобразует психоматрицу в ASCII-таблицу
-    """
     h_line = "+" + "+".join(["-" * cell_width] * 3) + "+"
 
     lines = [h_line]
     for row in matrix:
         lines.append(
-            "|" + "|".join(cell.center(cell_width) for cell in row) + "|"
+            "|" + "|".join(f"{cell:^{cell_width}}" for cell in row) + "|"
         )
         lines.append(h_line)
 
     return "\n".join(lines)
+
 
