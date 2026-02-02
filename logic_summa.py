@@ -132,16 +132,27 @@ def build_psychomatrix(day: int, month: int, year: int) -> list[list[str]]:
     return matrix
 
 
-def psychomatrix_to_ascii(matrix: list[list[str]], cell_width: int = 9) -> str:
+def psychomatrix_to_ascii(
+    matrix: list[list[str]],
+    cell_width: int = 9,
+    empty_content: str = "---"  # три тире
+) -> str:
+    # Горизонтальная линия для всей таблицы
     h_line = "+" + "+".join(["-" * cell_width] * 3) + "+"
 
     lines = [h_line]
     for row in matrix:
-        lines.append(
-            "|" + "|".join(f"{cell:^{cell_width}}" for cell in row) + "|"
-        )
+        formatted_cells = []
+        for cell in row:
+            if cell:
+                formatted_cells.append(f"{cell:^{cell_width}}")
+            else:
+                formatted_cells.append(f"{empty_content:^{cell_width}}")
+        # вертикальные линии строго ASCII
+        lines.append("|" + "|".join(formatted_cells) + "|")
         lines.append(h_line)
 
     return "\n".join(lines)
+
 
 
