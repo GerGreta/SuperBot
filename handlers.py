@@ -61,7 +61,7 @@ async def message_handler(message: types.Message):
             f"🧠 Число Сознания: {consciousness}\n"
             f"🔥 Число Действия: {action}\n\n"
             f"🧩 Личная матрица:\n"
-            f"```\n{matrix_ascii}\n```\n\n"
+            f"{matrix_ascii}\n\n"
             f"🔢 Цифры, которые есть: {present_str}\n"
             f"⭕ Цифры, которых нет: {absent_str}\n\n"
             f"🌱 Личный год: {personal_year}\n"
