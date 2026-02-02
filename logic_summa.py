@@ -134,7 +134,7 @@ def build_psychomatrix(day: int, month: int, year: int) -> list[list[str]]:
 
 def psychomatrix_to_ascii(
     matrix: list[list[str]],
-    cell_width: int = 9,
+    cell_width: int = 11,
     empty_content: str = "---"  # три тире для пустых
 ) -> str:
     h_line = "+" + "+".join(["-" * cell_width] * 3) + "+"
