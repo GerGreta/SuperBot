@@ -1,6 +1,7 @@
 # logic_summa.py
 import re
 from datetime import datetime
+from collections import Counter
 
 def reduce_to_single_digit(n: int) -> int:
     while n >= 10:
@@ -101,6 +102,48 @@ def calculate_personal_months(personal_year: int) -> str:
     for i, month_name in enumerate(months, start=1):
         value = reduce_to_single_digit(personal_year + i)
         lines.append(f"{month_name}: {value}")
+
+    return "\n".join(lines)
+
+
+
+
+def build_psychomatrix(day: int, month: int, year: int) -> list[list[str]]:
+    """
+    Строит психоматрицу (квадрат Пифагора) по дате рождения
+    Возвращает матрицу 3×3 из строк
+    """
+    digits = f"{day}{month}{year}"
+    digits = [d for d in digits if d != "0"]
+    counts = Counter(digits)
+
+    layout = [
+        ["3", "6", "9"],
+        ["2", "5", "8"],
+        ["1", "4", "7"],
+    ]
+
+    matrix = []
+    for row in layout:
+        matrix.append([
+            digit * counts.get(digit, 0) for digit in row
+        ])
+
+    return matrix
+
+
+def psychomatrix_to_ascii(matrix: list[list[str]], cell_width: int = 9) -> str:
+    """
+    Преобразует психоматрицу в ASCII-таблицу
+    """
+    h_line = "+" + "+".join(["-" * cell_width] * 3) + "+"
+
+    lines = [h_line]
+    for row in matrix:
+        lines.append(
+            "|" + "|".join(cell.center(cell_width) for cell in row) + "|"
+        )
+        lines.append(h_line)
 
     return "\n".join(lines)
 
