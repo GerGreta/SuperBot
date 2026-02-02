@@ -1,4 +1,3 @@
-# handlers.py
 import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
@@ -11,6 +10,8 @@ from logic_summa import (
     analyze_digits,
     calculate_personal_year,
     calculate_personal_months,
+    build_psychomatrix,
+    psychomatrix_to_ascii,
 )
 
 TOKEN = os.getenv("BOT_TOKEN")
@@ -28,6 +29,7 @@ async def start_handler(message: types.Message):
         "Я рассчитаю:\n"
         "• Число Сознания\n"
         "• Число Действия\n"
+        "• Психоматрицу\n"
         "• Личный год\n"
         "• Личные месяцы (январь–декабрь)"
     )
@@ -48,13 +50,18 @@ async def message_handler(message: types.Message):
         personal_year = calculate_personal_year(day, month, year)
         personal_months = calculate_personal_months(personal_year)
 
-        # анализ цифр берём из исходного текста (как пользователь ввёл)
         present_str, absent_str = analyze_digits(text)
+
+        # психоматрица
+        matrix = build_psychomatrix(day, month, year)
+        matrix_ascii = psychomatrix_to_ascii(matrix, cell_width=9)
 
         await message.answer(
             f"📅 Дата рождения: {day:02}.{month:02}.{year}\n\n"
             f"🧠 Число Сознания: {consciousness}\n"
             f"🔥 Число Действия: {action}\n\n"
+            f"🧩 Личная матрица:\n"
+            f"```\n{matrix_ascii}\n```\n\n"
             f"🔢 Цифры, которые есть: {present_str}\n"
             f"⭕ Цифры, которых нет: {absent_str}\n\n"
             f"🌱 Личный год: {personal_year}\n"
