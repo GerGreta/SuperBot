@@ -1,4 +1,4 @@
 aiogram==3.1.0
 Pillow
-pydantic==2.40.1
-pydantic-core==2.40.1
+pydantic==2.12.5
+pydantic-core==2.33.2
