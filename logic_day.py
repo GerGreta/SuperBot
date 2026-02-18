@@ -1,22 +1,32 @@
 import re
 from datetime import datetime, timedelta
 
+# Словарь для сокращённых русских месяцев
+MONTH_SHORT = {
+    1: "янв.",
+    2: "фев.",
+    3: "мар.",
+    4: "апр.",
+    5: "май.",
+    6: "июн.",
+    7: "июл.",
+    8: "авг.",
+    9: "сен.",
+    10: "окт.",
+    11: "ноя.",
+    12: "дек.",
+}
+
 
 def reduce_to_digit(n: int) -> int:
-    """
-    Приведение числа к однозначному.
-    """
+    """Приведение числа к однозначному."""
     while n > 9:
         n = sum(int(d) for d in str(n))
     return n
 
 
 def parse_day_month(text: str):
-    """
-    Извлекает день и месяц из строки.
-    Поддерживает форматы:
-    2404, 24.04, 24/04, 24-4, 244 (24.4)
-    """
+    """Извлекает день и месяц из строки (3–4 цифры)."""
     digits = re.sub(r"\D", "", text)
 
     if len(digits) == 4:
@@ -30,32 +40,11 @@ def parse_day_month(text: str):
 
     if 1 <= day <= 31 and 1 <= month <= 12:
         return day, month
-
     return None, None
 
 
-def get_russian_weekday(date_obj: datetime) -> str:
-    """
-    Возвращает день недели на русском языке.
-    """
-    weekdays = {
-        0: "Понедельник",
-        1: "Вторник",
-        2: "Среда",
-        3: "Четверг",
-        4: "Пятница",
-        5: "Суббота",
-        6: "Воскресенье",
-    }
-    return weekdays[date_obj.weekday()]
-
-
 def calculate_personal_days(birth_day: int, birth_month: int) -> str:
-    """
-    Расчёт личного дня на сегодня и следующие 8 дней.
-    Формат вывода:
-    18.02.2026, Среда - 4
-    """
+    """Расчёт личного дня на сегодня и следующие 8 дней (компактный формат)."""
     today = datetime.now()
 
     # Число рождения
@@ -72,34 +61,20 @@ def calculate_personal_days(birth_day: int, birth_month: int) -> str:
 
     for i in range(9):
         current_date = today + timedelta(days=i)
-
-        total = (
-            birth_number
-            + year_number
-            + current_date.month
-            + current_date.day
-        )
-
+        total = birth_number + year_number + current_date.month + current_date.day
         personal_day = reduce_to_digit(total)
 
-        formatted_date = current_date.strftime("%d.%m.%Y")
-        weekday = get_russian_weekday(current_date)
+        day = current_date.day
+        month_short = MONTH_SHORT[current_date.month]
 
-        results.append(
-            f"{formatted_date}, {weekday} - {personal_day}"
-        )
+        results.append(f"{day} {month_short} - {personal_day}")
 
     return "\n".join(results)
 
 
 def logic_day(text: str) -> str:
-    """
-    Главная функция для использования в боте.
-    Принимает текст пользователя и возвращает результат.
-    """
+    """Главная функция для использования в боте."""
     day, month = parse_day_month(text)
-
     if day and month:
         return calculate_personal_days(day, month)
-
     return None
