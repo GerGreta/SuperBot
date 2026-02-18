@@ -1,7 +1,7 @@
 import re
 from datetime import datetime, timedelta
 
-# Словарь для сокращённых русских месяцев
+# Сокращения месяцев и дней недели
 MONTH_SHORT = {
     1: "янв.",
     2: "фев.",
@@ -15,6 +15,16 @@ MONTH_SHORT = {
     10: "окт.",
     11: "ноя.",
     12: "дек.",
+}
+
+WEEKDAY_SHORT = {
+    0: "пн",
+    1: "вт",
+    2: "ср",
+    3: "чт",
+    4: "пт",
+    5: "сб",
+    6: "вс",
 }
 
 
@@ -44,18 +54,11 @@ def parse_day_month(text: str):
 
 
 def calculate_personal_days(birth_day: int, birth_month: int) -> str:
-    """Расчёт личного дня на сегодня и следующие 8 дней (компактный формат)."""
+    """Расчёт личного дня на сегодня и следующие 8 дней (формат 18 фев. ср ➤ 4)."""
     today = datetime.now()
 
-    # Число рождения
-    birth_number = reduce_to_digit(
-        sum(int(d) for d in f"{birth_day}{birth_month}")
-    )
-
-    # Число текущего года
-    year_number = reduce_to_digit(
-        sum(int(d) for d in str(today.year))
-    )
+    birth_number = reduce_to_digit(sum(int(d) for d in f"{birth_day}{birth_month}"))
+    year_number = reduce_to_digit(sum(int(d) for d in str(today.year)))
 
     results = []
 
@@ -65,9 +68,10 @@ def calculate_personal_days(birth_day: int, birth_month: int) -> str:
         personal_day = reduce_to_digit(total)
 
         day = current_date.day
-        month_short = MONTH_SHORT[current_date.month]
+        month = MONTH_SHORT[current_date.month]
+        weekday = WEEKDAY_SHORT[current_date.weekday()]
 
-        results.append(f"{day} {month_short} - {personal_day}")
+        results.append(f"{day} {month} {weekday} ➤ {personal_day}")
 
     return "\n".join(results)
 
