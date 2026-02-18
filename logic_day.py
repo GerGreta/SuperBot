@@ -36,15 +36,22 @@ def reduce_to_digit(n: int) -> int:
 
 
 def parse_day_month(text: str):
-    """Извлекает день и месяц из строки (3–4 цифры)."""
+    """
+    Извлекает день и месяц из строки.
+    День: 1–2 цифры, месяц: всегда 2 цифры.
+    Примеры:
+    506 -> 5 июня
+    2404 -> 24 апреля
+    05.06 -> 5 июня
+    """
     digits = re.sub(r"\D", "", text)
 
-    if len(digits) == 4:
+    if len(digits) == 3:  # dMM
+        day = int(digits[0])
+        month = int(digits[1:])
+    elif len(digits) == 4:  # ddMM
         day = int(digits[:2])
         month = int(digits[2:])
-    elif len(digits) == 3:
-        day = int(digits[:2])
-        month = int(digits[2])
     else:
         return None, None
 
